@@ -268,3 +268,28 @@ function openNav() {
 function closeNav() {
   document.getElementById("myNav").style.width = "0%";
 }
+$("#reloadScene").click(function(){
+  $("#scene_list").html("");
+  obs.send('GetSceneList').then(data => {
+      const sceneList = document.getElementById('scene_list');
+      data.scenes.forEach(scene => {
+        const sceneElement = document.createElement('button');
+        sceneElement.innerHTML = scene.name + " <small><small><small><span class='isSelected badge badge-success'></span><span class='isActive badge badge-danger'></span></small></small></small>";
+        sceneElement.className = 'scenne ' + scene.name.replaceAll(" ", "");
+        sceneElement.onclick = function () {
+          obs.send('SetPreviewScene', {
+            'scene-name': scene.name
+          });
+          obs.send('GetPreviewScene').then(data => {
+            document.getElementById("selectedScene").textContent = data.name;
+          });
+        };
+        obs.send('GetPreviewScene').then(data => {
+          document.getElementById("selectedScene").textContent = data.name;
+        });
+        sceneList.appendChild(sceneElement);
+      });
+    }).catch((err) => {
+      console.log(err)
+    });
+})
